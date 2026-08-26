@@ -25,7 +25,7 @@ export function useEditorContext(): EditorState {
       const context = await pixcall.getContext<PluginContext>()
       const [entry] = context?.invocation?.selection?.entryIds
         ? await pixcall.entries.getByIds<Entry>([context.invocation.selection.entryIds[0]])
-        : (await pixcall.entries.getSelected<Entry>()).entries
+        : (await pixcall.entries.listSelected<Entry>()).entries
       const fileServer = context?.library.fileServer
 
       if (!entry || !fileServer) {

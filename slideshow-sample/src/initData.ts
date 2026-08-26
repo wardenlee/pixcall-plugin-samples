@@ -46,7 +46,7 @@ async function getSelectedEntries(): Promise<Entry[]> {
   const entries: Entry[] = []
   let cursor: string | undefined
   do {
-    const page = await pixcall.entries.getSelected<Entry>({ cursor })
+    const page = await pixcall.entries.listSelected<Entry>({ cursor })
     entries.push(...page.entries)
     cursor = page.nextCursor ?? undefined
   } while (cursor)
