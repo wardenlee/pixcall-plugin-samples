@@ -1,0 +1,5 @@
+{
+  "name": "示例：CAD 查看器",
+  "description": "一个演示如何在 Pixcall 中查看和导出 DWG、DXF CAD 图纸的插件示例",
+  "viewer_title": "CAD 查看器"
+}

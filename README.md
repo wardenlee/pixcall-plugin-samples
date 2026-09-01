@@ -16,6 +16,7 @@ packaged plugin.
 
 ## Samples
 
+- [`cad-viewer-sample`](./cad-viewer-sample/) — DWG/DXF CAD viewer plugin.
 - [`exif-inspector-sample`](./exif-inspector-sample/) — EXIF metadata inspector.
 - [`image-editor-sample`](./image-editor-sample/) — image cropping editor.
 - [`pdf-viewer-sample`](./pdf-viewer-sample/) — PDF viewer plugin.

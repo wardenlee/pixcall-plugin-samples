@@ -1,0 +1,40 @@
+{
+  "name": "cad-viewer-sample",
+  "version": "0.1.0",
+  "description": "Full-featured DWG/DXF CAD viewer for Pixcall",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "build": "tsc --noEmit --skipLibCheck && vite build --mode production"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "2.3.2",
+    "@mlightcad/cad-agent-plugin": "1.6.3",
+    "@mlightcad/cad-html-plugin": "1.6.3",
+    "@mlightcad/cad-pdf-plugin": "1.6.3",
+    "@mlightcad/cad-simple-viewer": "1.6.3",
+    "@mlightcad/cad-svg-plugin": "1.6.3",
+    "@mlightcad/cad-viewer": "1.6.3",
+    "@mlightcad/data-model": "1.14.2",
+    "@mlightcad/libredwg-converter": "3.14.2",
+    "@mlightcad/mtext-renderer": "0.12.4",
+    "@mlightcad/three-renderer": "1.6.3",
+    "@mlightcad/ui-components": "0.1.11",
+    "@vueuse/core": "11.3.0",
+    "element-plus": "2.14.5",
+    "lodash-es": "4.17.21",
+    "pixcall": "0.2.1",
+    "three": "0.172.0",
+    "vue": "3.5.41",
+    "vue-i18n": "11.4.10"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "@vitejs/plugin-vue": "6.0.8",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vite-plugin-static-copy": "3.4.0",
+    "vue-tsc": "2.2.12"
+  }
+}
