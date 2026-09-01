@@ -14,7 +14,7 @@ The applicable license text is included under
 
 ## React
 
-Packages: `react@19.2.0`, `react-dom@19.2.0`  
+Packages: `react@19.2.8`, `react-dom@19.2.8`  
 License: MIT  
 Project: <https://github.com/facebook/react>
 

@@ -1,6 +1,6 @@
 {
   "name": "Example: EXIF Inspector",
-  "description": "An example plugin demonstrating how to inspect EXIF metadata with React, Vite, exifr, and the Pixcall SDK.",
+  "description": "An example plugin demonstrating how to inspect EXIF metadata with React, Vite, exifr, and the Pixcall SDK",
   "inspector_title": "EXIF",
   "exif.loading": "Loading…",
   "exif.no_original": "No original image file is available.",

@@ -15,34 +15,21 @@ is a self-contained project that demonstrates a focused plugin capability.
 - Read `package.json`, `manifest.json`, `manifest.dev.json`, `src/`, and
   `vite.config.mjs` before making changes.
 - During local development, `manifest.dev.json` points contributions to the
-  Vite development server. For packaged builds, `manifest.json` points to
-  `index.html`, and Vite copies runtime assets, localization files, icons, and
-  license notices into `dist/`.
+  development server. For packaged builds, `manifest.json` points to
+  `index.html`, and the build copies the runtime assets required by the
+  manifest into `dist/`.
 - When changing a feature, start with its manifest contribution, then trace
   its UI entry point and the Pixcall SDK context it consumes.
 
-Typical sample contents include:
-
-- `src/`: plugin source code;
-- `manifest.json` and `manifest.dev.json`: production and local-development
-  plugin manifests;
-- `l10n/`: locale JSON files referenced by the manifest's `l10n` field. Keep
-  all plugin localization files inside this directory;
-- `icons/`: plugin icons referenced by the manifest;
-- `vite.config.mjs`: Vite build configuration and packaged-asset copy rules;
-- `third-party-licenses/` and `THIRD-PARTY-NOTICES.md`: dependency notices.
-
-See [`docs/manifest.md`](docs/manifest.md) for the manifest fields, directory
-layout, localization format, permissions, and contribution definitions.
-
-The Pixcall Plugin SDK is provided by the [`pixcall`](https://www.npmjs.com/package/pixcall)
-npm package.
+See [`docs/manifest.md`](docs/manifest.md) for manifest fields, directory
+layout, localization format, permissions, contribution definitions, and asset
+conventions.
 
 ## Environment and tooling
 
-- Use Node.js 22.12 or later and npm for local development.
-- The current sample uses React, TypeScript, and Vite. Follow the existing
-  scripts and configuration before introducing new tooling.
+- Use Node.js 24.11 or later and npm for local development.
+- Samples may use different frontend stacks. Follow the target sample's
+  `package.json` and build configuration before introducing new tooling.
 - Keep browser-facing code compatible with the Pixcall plugin runtime. Avoid
   adding Node.js-only APIs to code that runs inside the plugin UI.
 
@@ -70,24 +57,12 @@ sample's port configuration and its development manifest together.
   `package.json` synchronized.
 - Keep manifest contribution IDs, command IDs, and localization keys stable
   once they are used by consumers.
-- Treat the top-level `manifest.icon` as the plugin icon. Command `icon` paths
-  are for command and context-menu icons: use a 16×16 base PNG and provide a
-  matching 32×32 `@2x` asset with the same basename when needed. See
-  [`docs/manifest.md`](docs/manifest.md) for the full convention.
+- Follow the icon conventions documented in [`docs/manifest.md`](docs/manifest.md).
 - Build output should contain the plugin files, manifest, icons, localization
   files, license files, and third-party notices required by the plugin. Do not
   include source-only or development files unless the runtime requires them.
 
-## Contribution reference
-
-Start from the contribution type that matches the plugin behavior:
-
-| Need | Manifest contribution | Reference sample |
-| --- | --- | --- |
-| Replace or add a file viewer | `contributes.viewers` | `pdf-viewer-sample` |
-| Show metadata for a selected file | `contributes.inspectors` | `exif-inspector-sample` |
-| Add an action for selected files | `contributes.commands` and, when needed, `context_menus` | `image-editor-sample` |
-| Open selected files in a fullscreen window | `contributes.commands`, `context_menus`, and optionally `keybindings` | `slideshow-sample` |
+## Contribution rules
 
 Use the narrowest file types and extensions that the feature actually handles.
 For multi-selection commands, read `context.invocation.selection.entryIds` before

@@ -10,7 +10,7 @@ Before you begin, install:
 
 - [Pixcall](https://pixcall.com/), to load and test a plugin.
 - [Git](https://git-scm.com/), to download the samples.
-- Node.js 22.12 or later. npm is included with Node.js and is used to install
+- Node.js 24.11 or later. npm is included with Node.js and is used to install
   dependencies and run the sample scripts.
 
 Check that Node.js and npm are available:
@@ -31,15 +31,33 @@ cd pixcall-plugin-samples
 
 You can try any of these samples:
 
-| Sample | Demonstrates | Development port |
-| --- | --- | --- |
-| [`exif-inspector-sample`](../exif-inspector-sample/) | Reading and displaying image EXIF metadata | `5173` |
-| [`image-editor-sample`](../image-editor-sample/) | Opening an image editor window from a context menu | `5173` |
-| [`pdf-viewer-sample`](../pdf-viewer-sample/) | Registering a PDF viewer contribution | `5173` |
-| [`slideshow-sample`](../slideshow-sample/) | Opening selected files in a fullscreen slideshow | `5173` |
+| Sample | Demonstrates | Manifest contribution | Development port |
+| --- | --- | --- | --- |
+| [`cad-viewer-sample`](../cad-viewer-sample/) | Viewing DWG and DXF CAD files | `contributes.viewers` | `5173` |
+| [`exif-inspector-sample`](../exif-inspector-sample/) | Reading and displaying image EXIF metadata | `contributes.inspectors` | `5173` |
+| [`image-editor-sample`](../image-editor-sample/) | Opening an image editor window from a context menu | `contributes.commands` and, when needed, `context_menus` | `5173` |
+| [`pdf-viewer-sample`](../pdf-viewer-sample/) | Registering a PDF viewer contribution | `contributes.viewers` | `5173` |
+| [`slideshow-sample`](../slideshow-sample/) | Opening selected files in a fullscreen slideshow | `contributes.commands`, `context_menus`, and optionally `keybindings` | `5173` |
 
 All samples use port `5173` by default, so run only one development server at a
 time.
+
+Choose the narrowest file types and extensions that the feature actually
+handles. See the [Plugin Manifest guide](manifest.md) for the full contribution
+and permission rules.
+
+## Repository structure
+
+Each sample is a self-contained project. Its common files and directories
+include:
+
+- `src/`: plugin source code;
+- `manifest.json` and `manifest.dev.json`: production and local-development
+  plugin manifests;
+- `l10n/`: locale JSON files referenced by the manifest's `l10n` field;
+- `icons/`: plugin icons referenced by the manifest;
+- `vite.config.mjs`: build configuration and packaged-asset copy rules;
+- `third-party-licenses/` and `THIRD-PARTY-NOTICES.md`: dependency notices.
 
 ## Run your first sample
 
@@ -72,12 +90,13 @@ change does not appear immediately.
 
 ## Try it out
 
-### PDF viewer
+### CAD viewer
 
-Open or select a PDF file in Pixcall. The PDF viewer contribution should be
-available for PDF files and display the document in the sample viewer.
+Open or select a DWG or DXF file in Pixcall. The CAD viewer contribution should
+be available for supported CAD files and display the drawing in the sample
+viewer.
 
-See the [PDF viewer README](../pdf-viewer-sample/README.md) for more details.
+See the [CAD viewer README](../cad-viewer-sample/README.md) for more details.
 
 ### EXIF inspector
 
@@ -99,6 +118,13 @@ copy while learning or testing it.
 
 See the [Image editor README](../image-editor-sample/README.md) for more
 details.
+
+### PDF viewer
+
+Open or select a PDF file in Pixcall. The PDF viewer contribution should be
+available for PDF files and display the document in the sample viewer.
+
+See the [PDF viewer README](../pdf-viewer-sample/README.md) for more details.
 
 ### Slideshow
 
@@ -137,7 +163,7 @@ silently choosing another port.
 
 ### npm reports an unsupported Node.js version
 
-Install Node.js 22.12 or later, then run `npm install` again in the sample
+Install Node.js 24.11 or later, then run `npm install` again in the sample
 directory.
 
 ### The plugin does not appear in Pixcall

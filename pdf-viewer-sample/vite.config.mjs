@@ -17,19 +17,8 @@ export default defineConfig(({ mode }) => ({
         { src: 'LICENSE', dest: '.' },
         { src: 'THIRD-PARTY-NOTICES.md', dest: '.' },
         {
-          src: 'third-party-licenses/pdfjs/**/*',
-          dest: 'third-party-licenses/pdfjs',
-          rename: { stripBase: true },
-        },
-        {
-          src: 'third-party-licenses/react-pdf/**/*',
-          dest: 'third-party-licenses/react-pdf',
-          rename: { stripBase: true },
-        },
-        {
-          src: 'third-party-licenses/react/**/*',
-          dest: 'third-party-licenses/react',
-          rename: { stripBase: true },
+          src: 'third-party-licenses',
+          dest: '.',
         },
         { src: 'icons/**/*', dest: 'icons', rename: { stripBase: true } },
         ...(mode === 'production'

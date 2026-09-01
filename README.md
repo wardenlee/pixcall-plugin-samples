@@ -19,7 +19,7 @@ packaged plugin.
 - [`exif-inspector-sample`](./exif-inspector-sample/) — EXIF metadata inspector.
 - [`image-editor-sample`](./image-editor-sample/) — image cropping editor.
 - [`pdf-viewer-sample`](./pdf-viewer-sample/) — PDF viewer plugin.
-- [`slideshow-sample`](./slideshow-sample/) — fullscreen slideshow command plugin.
+- [`slideshow-sample`](./slideshow-sample/) — fullscreen slideshow plugin.
 
 Each sample is an independent project with its own dependencies and development
 server. Choose one and open its README for feature-specific instructions.

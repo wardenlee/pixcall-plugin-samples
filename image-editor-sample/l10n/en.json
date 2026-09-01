@@ -1,6 +1,6 @@
 {
   "name": "Example: Image Editor",
-  "description": "An example plugin demonstrating image cropping in an independent Pixcall window.",
+  "description": "An example plugin demonstrating image cropping in an independent Pixcall window",
   "command.image_editor": "Image Editor",
   "editor.loading": "Loading…",
   "editor.no_image": "Select one image to edit.",

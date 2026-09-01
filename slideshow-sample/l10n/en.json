@@ -1,6 +1,6 @@
 {
   "name": "Example: Slideshow",
-  "description": "An example plugin demonstrating a fullscreen slideshow for selected files.",
+  "description": "An example plugin demonstrating a fullscreen slideshow for selected files",
   "command.open": "View as Slideshow",
   "command.previous": "Previous Item",
   "command.next": "Next Item",

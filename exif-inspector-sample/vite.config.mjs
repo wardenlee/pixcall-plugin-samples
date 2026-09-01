@@ -16,14 +16,8 @@ export default defineConfig(({ mode }) => ({
           ? [{ src: 'l10n/*', dest: 'l10n', rename: { stripBase: true } }]
           : []),
         {
-          src: 'third-party-licenses/exifr/**/*',
-          dest: 'third-party-licenses/exifr',
-          rename: { stripBase: true },
-        },
-        {
-          src: 'third-party-licenses/react/**/*',
-          dest: 'third-party-licenses/react',
-          rename: { stripBase: true },
+          src: 'third-party-licenses',
+          dest: '.',
         },
       ],
     }),

@@ -1,6 +1,6 @@
 {
   "name": "示例：EXIF 信息检查器",
-  "description": "一个使用 React、Vite、exifr 和 Pixcall SDK 检查图像 EXIF 信息的插件示例。",
+  "description": "一个使用 React、Vite、exifr 和 Pixcall SDK 检查图像 EXIF 信息的插件示例",
   "inspector_title": "EXIF 信息",
   "exif.loading": "加载中…",
   "exif.no_original": "没有可用的原始图像文件。",
