@@ -13,5 +13,7 @@
   "editor.confirm_message": "裁剪後的圖片將取代原檔案，此操作無法復原。",
   "editor.confirm": "覆蓋",
   "editor.cancel": "取消",
-  "editor.close": "關閉"
+  "editor.close": "關閉",
+  "editor.original_size": "原圖",
+  "editor.crop_size": "裁剪"
 }

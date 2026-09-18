@@ -46,6 +46,8 @@ function Editor({
   const [crop, setCrop] = useState<PercentCrop>(defaultCrop)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const cropWidth = Math.max(1, Math.round(context.entry.imageWidth * (crop.width / 100)))
+  const cropHeight = Math.max(1, Math.round(context.entry.imageHeight * (crop.height / 100)))
 
   async function saveCrop() {
     if (!imageRef.current || saving) {
@@ -84,6 +86,15 @@ function Editor({
     <main className="editor">
       <header className="toolbar">
         <span className="title">{context.entry.name}</span>
+        <button
+          aria-label={messages['editor.close']}
+          className="close-button"
+          title={messages['editor.close']}
+          type="button"
+          onClick={() => pixcall.window.close()}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
       </header>
 
       <section className="workspace">
@@ -94,13 +105,20 @@ function Editor({
 
       <footer className="actions">
         <span className="image-info">
-          {context.entry.imageWidth} × {context.entry.imageHeight} · {formatFileSize(context.entry.size, context.locale)}
+          <span className="dimension-badge original-dimension">
+            <span className="dimension-label">{messages['editor.original_size']}</span>
+            {formatPixelDimensions(context.entry.imageWidth, context.entry.imageHeight, context.locale)}
+          </span>
+          <span aria-hidden="true" className="dimension-separator">
+            ·
+          </span>
+          <span className="dimension-badge crop-dimension">
+            <span className="dimension-label">{messages['editor.crop_size']}</span>
+            {formatPixelDimensions(cropWidth, cropHeight, context.locale)}
+          </span>
         </span>
         <span className="message">{message}</span>
-        <button type="button" onClick={() => pixcall.window.close()}>
-          {messages['editor.close']}
-        </button>
-        <button type="button" disabled={saving} onClick={saveCrop}>
+        <button className="save-button" type="button" disabled={saving} onClick={saveCrop}>
           {saving ? messages['editor.saving'] : messages['editor.save']}
         </button>
       </footer>
@@ -112,14 +130,7 @@ function StatusMessage({ text }: { text: string }) {
   return <div className="status">{text}</div>
 }
 
-function formatFileSize(bytes: number, locale: string) {
-  if (bytes < 1024) {
-    return `${bytes} B`
-  }
-
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  const unitIndex = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1)
-  const value = bytes / 1024 ** unitIndex
-
-  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value)} ${units[unitIndex]}`
+function formatPixelDimensions(width: number, height: number, locale: string) {
+  const formatter = new Intl.NumberFormat(locale)
+  return `${formatter.format(width)} × ${formatter.format(height)}`
 }

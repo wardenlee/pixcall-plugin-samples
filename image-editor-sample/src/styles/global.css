@@ -61,8 +61,72 @@ button:disabled {
 }
 
 .toolbar {
+  position: relative;
+  min-height: 46px;
   justify-content: center;
+  padding: 8px 12px;
   border-bottom: 1px solid #d4d4d8;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.close-button {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #71717a;
+  background: transparent;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+  transform: translateY(-50%);
+  transition: background-color 120ms ease, color 120ms ease, transform 120ms ease;
+  -webkit-app-region: no-drag;
+}
+
+.close-button:hover {
+  color: #27272a;
+  background: rgb(0 0 0 / 0.08);
+}
+
+.close-button:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.close-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.save-button {
+  border-color: #6366f1;
+  color: #ffffff;
+  background: #6366f1;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.save-button:hover:not(:disabled) {
+  border-color: #4f46e5;
+  background: #4f46e5;
+}
+
+.save-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.save-button:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
 }
 
 .actions {
@@ -71,7 +135,7 @@ button:disabled {
 }
 
 .title {
-  max-width: 70vw;
+  max-width: calc(100% - 48px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -83,14 +147,43 @@ button:disabled {
 }
 
 .image-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex: 0 0 auto;
   color: #71717a;
   white-space: nowrap;
 }
 
+.dimension-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.original-dimension {
+  background: rgb(0 0 0 / 0.04);
+}
+
+.crop-dimension {
+  color: #4338ca;
+  background: rgb(99 102 241 / 0.12);
+}
+
+.dimension-label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dimension-separator {
+  color: #a1a1aa;
+}
+
 .workspace {
   display: flex;
-  align-items: flex-start;
+  align-items: safe center;
   justify-content: center;
   min-height: 0;
   overflow: auto;
@@ -104,8 +197,36 @@ button:disabled {
   background: rgb(39 39 42 / 0.72);
 }
 
+.dark .close-button {
+  color: #a1a1aa;
+}
+
+.dark .close-button:hover {
+  color: #f4f4f5;
+  background: rgb(255 255 255 / 0.12);
+}
+
+.dark .save-button {
+  border-color: #818cf8;
+  background: #818cf8;
+}
+
+.dark .save-button:hover:not(:disabled) {
+  border-color: #6366f1;
+  background: #6366f1;
+}
+
 .dark .workspace {
   background: #27272a;
+}
+
+.dark .original-dimension {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.dark .crop-dimension {
+  color: #c4b5fd;
+  background: rgb(129 140 248 / 0.18);
 }
 
 .ReactCrop {

@@ -13,5 +13,7 @@
   "editor.confirm_message": "裁剪后的图片将替换原文件，此操作无法撤销。",
   "editor.confirm": "覆盖",
   "editor.cancel": "取消",
-  "editor.close": "关闭"
+  "editor.close": "关闭",
+  "editor.original_size": "原图",
+  "editor.crop_size": "裁剪"
 }

@@ -13,5 +13,7 @@
   "editor.confirm_message": "The cropped image will replace the original file. This action cannot be undone.",
   "editor.confirm": "Overwrite",
   "editor.cancel": "Cancel",
-  "editor.close": "Close"
+  "editor.close": "Close",
+  "editor.original_size": "Original",
+  "editor.crop_size": "Crop"
 }
