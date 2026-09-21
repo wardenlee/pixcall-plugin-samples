@@ -321,26 +321,39 @@ with `pixcall.commands`.
 The optional `when` field adds a host condition for the keybinding; it does not
 define a separate keybinding scope.
 
-Use these canonical TanStack hotkey names in plugin manifests:
+The first two columns show common physical key labels. Manifest key values are
+the same on macOS and Windows; use the value in the third column on both
+platforms. For example, the Option key on macOS and the Alt key on Windows both
+use `Alt`. Some Mac keyboards require `Fn` for navigation and function keys,
+and may not have a dedicated `Insert` key.
 
-| Canonical name | Meaning |
-| --- | --- |
-| `Escape` | Escape |
-| `Enter` | Enter/Return |
-| `Backspace` | Backspace |
-| `Delete` | Delete |
-| `Insert` | Insert |
-| `Space` | Space |
-| `Tab` | Tab |
-| `CapsLock` | Caps Lock |
-| `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight` | Arrow keys |
-| `Home`, `End`, `PageUp`, `PageDown` | Navigation keys |
-| `Control`, `Alt`, `Shift`, `Meta`, `Mod` | Modifiers |
-| `F1`–`F24` | Function keys |
-| `Mouse3`, `Mouse4` | Mouse Back, Mouse Forward |
+| macOS key name | Windows key name | Manifest key |
+| --- | --- | --- |
+| Command (⌘) | Control (Ctrl) | `Mod` |
+| Control (⌃) | Control (Ctrl) | `Control` |
+| Option (⌥) | Alt | `Alt` |
+| Shift (⇧) | Shift | `Shift` |
+| Command (⌘) | Windows (⊞) | `Meta` |
+| Return | Enter | `Enter` |
+| Delete (⌫, backward delete) | Backspace | `Backspace` |
+| Forward Delete (use `Fn`+Delete if there is no dedicated key) | Delete | `Delete` |
+| Esc | Esc | `Escape` |
+| Space bar | Space bar | `Space` |
+| Tab | Tab | `Tab` |
+| Caps Lock | Caps Lock | `CapsLock` |
+| Up, Down, Left, Right arrows | Up, Down, Left, Right arrows | `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight` |
+| Home, End, Page Up, Page Down | Home, End, Page Up, Page Down | `Home`, `End`, `PageUp`, `PageDown` |
+| Insert (not present on many Mac keyboards) | Insert | `Insert` |
+| F1–F24 | F1–F24 | `F1`–`F24` |
+| Uppercase letters (`A`–`Z`), digits (`0`–`9`), punctuation | Uppercase letters (`A`–`Z`), digits (`0`–`9`), punctuation | The corresponding character key |
+| Mouse Back button | Mouse Back button | `Mouse3` |
+| Mouse Forward button | Mouse Forward button | `Mouse4` |
 
-Letters, numbers, and punctuation use their normal key names. Combine keys with
-`+`, for example `Control+Alt+P`. For example:
+`Mod` resolves to Command on macOS and Control on Windows. `Meta` refers to
+Command on macOS and the Windows key on Windows. Write letter key names in
+uppercase (`A`–`Z`). Digits and punctuation use their ordinary key names. Join
+keys with `+`; for example, `Mod+Enter` means Command+Return on macOS and
+Control+Enter on Windows:
 
 ```json
 {
@@ -349,8 +362,8 @@ Letters, numbers, and punctuation use their normal key names. Combine keys with
 }
 ```
 
-The persisted and manifest values use these canonical names. Display labels are
-localized by Pixcall; Electron menu accelerators are generated separately.
+Pixcall stores manifest values in this form and localizes the displayed
+keybinding labels.
 
 ### Importer and page
 
