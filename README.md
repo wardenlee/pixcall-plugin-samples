@@ -16,17 +16,8 @@ development and test instructions.
 > content is preserved on the branch
 > [`backup/2026-10-23-pre-replace`](https://github.com/wardenlee/pixcall-plugin-samples/tree/backup/2026-10-23-pre-replace).
 
-## Start here
-
-New to Pixcall plugin development? The
-[Getting Started guide](docs/getting-started.md) walks you through installing
-the tools, running your first sample, testing it in Pixcall, and building a
-packaged plugin.
-
 ## Learn more
 
-- [Plugin Manifest](docs/manifest.md) — manifest fields, contributions,
-  permissions, localization, and directory structure.
 - [Pixcall Plugin SDK](https://www.npmjs.com/package/pixcall) — the SDK used by
   the plugin.
 

@@ -90,8 +90,8 @@ npm run bench      # 24k-entry cache benchmark
 - Plugin storage is capped at 5 MB; the cache uses a conservative UTF-8 budget.
 - Filtering cannot be pushed back into the main UI.
 
-See [`docs/manifest.md`](../docs/manifest.md) for manifest fields and
-contribution details.
+See the repository [`AGENTS.md`](../AGENTS.md) for manifest rules and the
+validation checklist.
 
 ## License
 
