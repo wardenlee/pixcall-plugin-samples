@@ -1,0 +1,72 @@
+{
+  "id": "filter-plugin",
+  "name": "%name%",
+  "description": "%description%",
+  "version": "0.3.1",
+  "author": "wardenlee",
+  "homepage": "https://github.com/wardenlee/pixcall-plugin-samples",
+  "icon": "icons/icon.png",
+  "categories": [
+    "viewer"
+  ],
+  "minimum_core_version": "0.9.7",
+  "platform_arch": [
+    "windows-x64"
+  ],
+  "permissions": {
+    "storage": true,
+    "sqlite": {
+      "read": true,
+      "write": true
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "filter-plugin.open",
+        "title": "%command.open%",
+        "kind": "window",
+        "entry": "index.prod.html",
+        "icon": {
+          "light": "icons/context-menu.png",
+          "dark": "icons/context-menu.png"
+        },
+        "window": {
+          "width": 1180,
+          "height": 820,
+          "min_width": 820,
+          "min_height": 560,
+          "resizable": true,
+          "movable": true,
+          "modal": false,
+          "fullscreenable": true
+        }
+      }
+    ],
+    "context_menus": [
+      {
+        "command": "filter-plugin.open",
+        "location": "entry_list",
+        "when": "has_selection"
+      },
+      {
+        "command": "filter-plugin.open",
+        "location": "folder_tree"
+      }
+    ],
+    "app_menus": [
+      {
+        "command": "filter-plugin.open",
+        "location": "file"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "filter-plugin.open",
+        "key": "Shift+E"
+      }
+    ]
+  },
+  "l10n": "./l10n",
+  "default_locale": "zh-CN"
+}

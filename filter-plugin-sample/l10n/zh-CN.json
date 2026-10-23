@@ -1,0 +1,5 @@
+{
+  "name": "Pixcall 分组筛选",
+  "description": "按标签组独立设置筛选逻辑：任意匹配 / 全部匹配 / 排除匹配",
+  "command.open": "打开分组筛选"
+}

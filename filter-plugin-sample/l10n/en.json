@@ -1,0 +1,5 @@
+{
+  "name": "Pixcall Group Filter",
+  "description": "Filter library entries with per-tag-group logic: any / all / exclude",
+  "command.open": "Open group filter"
+}

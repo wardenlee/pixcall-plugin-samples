@@ -1,0 +1,27 @@
+{
+  "name": "filter-plugin-sample",
+  "private": true,
+  "version": "0.3.1",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5174",
+    "build": "tsc --noEmit --skipLibCheck && vite build --mode production",
+    "test:e2e": "node scripts/e2e.v5.cjs",
+    "bench": "node scripts/bench-24107.cjs",
+    "shots": "node scripts/shoot-v5.cjs"
+  },
+  "dependencies": {
+    "pixcall": "0.2.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.4",
+    "typescript": "5.9.3",
+    "vite": "8.1.5",
+    "vite-plugin-static-copy": "4.1.1"
+  }
+}

@@ -1,5 +1,0 @@
-{
-  "name": "Example: CAD Viewer",
-  "description": "An example plugin demonstrating CAD viewing and export with DWG and DXF support in Pixcall",
-  "viewer_title": "CAD Viewer"
-}

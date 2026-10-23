@@ -1,11 +1,20 @@
 # Pixcall Plugin Samples
 
-A collection of focused, self-contained sample plugins for
-[Pixcall](https://pixcall.com/). Each sample demonstrates a specific plugin
-capability, including viewers, inspectors, and command-driven tools.
+A focused collection of Pixcall plugins. This repository currently hosts one
+production-grade sample:
 
-Use these projects to learn how Pixcall plugins are structured, run a sample
-locally, and start adapting one into your own plugin.
+- [`filter-plugin-sample`](./filter-plugin-sample/) — **Pixcall Group Filter
+  (Pixcall 分组筛选)**: filter library entries by tag groups with per-group
+  `any` / `all` / `exclude` logic, over a folders multi-select scope, with a
+  grid and a single-image viewer.
+
+Open its [README](./filter-plugin-sample/README.md) for features, installation,
+development and test instructions.
+
+> The previous five samples (cad-viewer, exif-inspector, image-editor,
+> pdf-viewer, slideshow) were replaced by this plugin on 2026-10-23. Their
+> content is preserved on the branch
+> [`backup/2026-10-23-pre-replace`](https://github.com/wardenlee/pixcall-plugin-samples/tree/backup/2026-10-23-pre-replace).
 
 ## Start here
 
@@ -14,39 +23,23 @@ New to Pixcall plugin development? The
 the tools, running your first sample, testing it in Pixcall, and building a
 packaged plugin.
 
-## Samples
-
-- [`cad-viewer-sample`](./cad-viewer-sample/) — View DWG and DXF files in
-  Pixcall.
-- [`exif-inspector-sample`](./exif-inspector-sample/) — Inspect image EXIF
-  metadata.
-- [`image-editor-sample`](./image-editor-sample/) — Crop a selected image in
-  an independent editor window.
-- [`pdf-viewer-sample`](./pdf-viewer-sample/) — View PDF files in Pixcall.
-- [`slideshow-sample`](./slideshow-sample/) — Open selected files in a
-  fullscreen slideshow.
-
-Each sample is an independent project with its own dependencies and development
-server. Choose one and open its README for feature-specific instructions.
-
 ## Learn more
 
 - [Plugin Manifest](docs/manifest.md) — manifest fields, contributions,
   permissions, localization, and directory structure.
-- [Pixcall Plugin SDK](https://www.npmjs.com/package/pixcall) — the SDK used
-  by the samples.
+- [Pixcall Plugin SDK](https://www.npmjs.com/package/pixcall) — the SDK used by
+  the plugin.
 
 ## Contact
 
-If you have any questions or suggestions, please
-[contact us](https://docs.pixcall.com/docs/about/contact-us/). We would love to
-hear your feedback.
+If you have any questions or suggestions, please open an issue on this
+repository.
 
 ## License
 
 The repository root is licensed under the MIT License. See
 [LICENSE](./LICENSE).
 
-Some samples have their own license terms. Before redistributing a sample,
-check its `LICENSE`, `package.json`, and `THIRD-PARTY-NOTICES.md`. Preserve the
-license files and notices that belong to the corresponding sample.
+Before redistributing the sample, check its `package.json` and
+`THIRD-PARTY-NOTICES.md`; preserve the license files and notices that belong to
+it.

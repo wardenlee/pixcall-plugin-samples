@@ -9,9 +9,9 @@ sample directory may add or override rules for that sample.
   inspect its `package.json`, manifests, relevant source entry points, and
   `vite.config.mjs`.
 - During local development, `manifest.dev.json` points contributions to the
-  development server. For packaged builds, `manifest.json` points to
-  `index.html`, and the build copies the runtime assets required by the
-  manifest into `dist/`.
+  development server. For packaged builds, `manifest.json` points to the
+  production entry (this sample: `index.prod.html`), and the build copies the
+  runtime assets required by the manifest next to it (`assets/`).
 - When changing a feature, start with its manifest contribution, then trace
   its UI entry point and the Pixcall SDK context it consumes.
 
@@ -35,9 +35,9 @@ npm run dev       # Start the local development server
 npm run build     # Check types and build the production output into dist/
 ```
 
-All samples use `127.0.0.1:5173` for development. Run only one sample's
-development server at a time unless its port and development manifest are
-intentionally changed together.
+Each sample declares its own dev port in `package.json` (this sample uses
+`127.0.0.1:5174`). Run only one sample's development server at a time unless its
+port and development manifest are intentionally changed together.
 
 ## Manifest and release rules
 
