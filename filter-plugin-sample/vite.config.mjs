@@ -23,7 +23,7 @@ import { join } from 'node:path'
  * ⇒ 请在真实路径（D:\WorkBuddyData\...）下构建，脚本会自动识别并给出提示。
  */
 
-const REQUIRED_MARKERS = ['6e5df6', 'scan4.manifest', '扫描全库', '满屏']
+const REQUIRED_MARKERS = ['6e5df6', 'scan4.manifest', '视图切换', 'Esc 返回', '满屏']
 
 function syncToPluginRoot() {
   return {

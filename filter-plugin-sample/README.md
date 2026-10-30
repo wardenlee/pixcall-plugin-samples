@@ -8,7 +8,7 @@ exposes.
 
 - Plugin id: `filter-plugin`
 - Display name: **Pixcall Group Filter** (zh-CN: **Pixcall 分组筛选**)
-- Version: 0.3.1
+- Version: 0.3.4
 
 ## Features
 
@@ -25,10 +25,22 @@ exposes.
 - **Batch tag input**: paste many tag names at once; the picker matches the
   longest tag name first, then fuzzes the leftovers by name / prefix / pinyin,
   and applies the confirmed set as removable chips.
+- **Compare view (2 / 3 / 4 images)**: pick images manually and inspect them
+  side by side in a full-window overlay (2 = two columns, 3 = three columns,
+  4 = 2x2, `object-fit: contain`, no cropping). Entries: the filter page toolbar
+  button (candidate picker), **Ctrl / Cmd / Shift + click** on the thumbnail grid
+  (1-4 numbered badges + a `Compare (n)` button), and the viewer toolbar button
+  (opens the picker with the current image pre-selected, max 4 / min 2).
+  Restore / maximize / close window controls are shared with every other page.
+- **Double-click an image in the viewer** to go back to the thumbnail grid
+  (images only - double-clicking a video does not leave the player).
 - **Top metrics row**: `scope count | library total | hits | data source + time`.
-- **Fullscreen / restore / close** on the filter page, grid and viewer (the
-  window is frameless; the manifest sets `fullscreenable: true` and the UI
-  provides a drag region).
+- **Row-2 controls**: a `Filter / Grid` text switch, then `Scan`, then
+  `Diagnostics`; the window's restore / maximize / close icons live on row 1
+  (filter page, grid, viewer and compare view all share the same component).
+- **Fullscreen / restore / close** on the filter page, grid, viewer and compare
+  view (the window is frameless; the manifest sets `fullscreenable: true` and
+  the UI provides a drag region).
 - **Cache v4** in plugin storage (UTF-8 budget 3.6 MB of the 5 MB limit) with
   generation-swap writes (write-new -> verify -> delete-old), so a failed write
   never destroys the previous cache.
@@ -74,10 +86,12 @@ npm run bench      # 24k-entry cache benchmark
 
 ## Tests
 
-- `scripts/e2e.v5.cjs` - 71 assertions: scope union, sub-folder toggle,
+- `scripts/e2e.v5.cjs` - 104 assertions: scope union, sub-folder toggle,
   select-all / invert on search results, batch tag parsing / applying /
   undoing, diagnostics payload, fullscreen state machine, cache write-failure
-  safety, scope persistence, zero console errors.
+  safety, scope persistence, compare view (multi-select badges, 2 / 3 / 4
+  layouts, candidate picker, layout rectangles unchanged, no overlapping
+  thumbnails), double-click-to-grid, row-2 button order, zero console errors.
 - `scripts/bench-24107.cjs` - 24,107 entries: cache size, reload time, v3
   legacy cache readability.
 

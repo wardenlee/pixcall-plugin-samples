@@ -27,6 +27,8 @@ export const ImageGrid = memo(function ImageGrid({
   size,
   resetKey,
   onOpen,
+  selectedIds = [],
+  onToggleSelect,
 }: {
   entries: MediaEntry[]
   fileServer: string
@@ -34,6 +36,10 @@ export const ImageGrid = memo(function ImageGrid({
   /** 筛选 / 范围 / 数据批次变化时传一个新值，网格会重置滚动与已渲染数量 */
   resetKey: string
   onOpen: (index: number) => void
+  /** 已选做对比的条目 id（顺序即 1/2/3/4 角标） */
+  selectedIds?: string[]
+  /** Ctrl/⌘/Shift + 点击：加选 / 取消（对比用） */
+  onToggleSelect?: (id: string) => void
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [limit, setLimit] = useState(PAGE)
@@ -68,14 +74,23 @@ export const ImageGrid = memo(function ImageGrid({
           const src = thumbUrl(fileServer, e)
           const bad = Boolean(failed[e.id])
           const ok = Boolean(loaded[e.id])
+          const selAt = selectedIds.indexOf(e.id)
           return (
             <button
               type="button"
               key={e.id}
-              className="grid-cell"
-              onClick={() => onOpen(i)}
+              className={`grid-cell${selAt >= 0 ? ' is-selected' : ''}`}
+              onClick={(ev) => {
+                if (ev.ctrlKey || ev.metaKey || ev.shiftKey) {
+                  ev.preventDefault()
+                  onToggleSelect?.(e.id)
+                  return
+                }
+                onOpen(i)
+              }}
               title={e.name || e.id}
             >
+              {selAt >= 0 && <span className="pick-badge grid-badge-num">{selAt + 1}</span>}
               {src && !bad && (
                 <img
                   className={`grid-img${ok ? ' is-loaded' : ''}`}
@@ -111,6 +126,7 @@ export function ImageViewer({
   supported,
   onIndex,
   onClose,
+  onCompare,
   onMaximize,
   onRestore,
   onCloseWindow,
@@ -123,6 +139,8 @@ export function ImageViewer({
   onIndex: (i: number) => void
   /** 关查看器、回网格 */
   onClose: () => void
+  /** 打开对比选图（当前图预选） */
+  onCompare: (id: string) => void
   onMaximize: () => void
   onRestore: () => void
   onCloseWindow: () => void
@@ -191,6 +209,10 @@ export function ImageViewer({
         <button type="button" className="viewer-back" onClick={onClose} title="返回网格（Esc）" aria-label="返回网格">
           <IconArrowLeft />
         </button>
+        {/* 对比：放到左侧（返回箭头之后、标题之前），与缩略图页工具栏的「对比」同侧 */}
+        <button type="button" className="btn viewer-compare" onClick={() => onCompare(cur.id)} title="选 2-4 张图对比（当前图已预选）">
+          对比
+        </button>
         <span className="viewer-title">{cur.name || cur.id}</span>
         <span className="viewer-meta">
           {safeIndex + 1} / {entries.length}
@@ -202,7 +224,7 @@ export function ImageViewer({
         )}
         {isVideo(cur) && <span className="viewer-meta">视频</span>}
         {isAudio(cur) && <span className="viewer-meta">音频</span>}
-        <span className="viewer-hint">滚轮翻页 · ← → 切换 · Esc 返回</span>
+        <span className="viewer-hint">滚轮翻页 · ← → 切换 · Esc 返回 · 双击图片返回</span>
         <WindowControls
           stage={stage}
           supported={supported}
@@ -242,6 +264,10 @@ export function ImageViewer({
             alt={cur.name}
             draggable={false}
             onClick={(e) => e.stopPropagation()}
+            onDoubleClick={(e) => {
+              e.stopPropagation()
+              onClose()
+            }}
           />
         )}
       </div>

@@ -305,8 +305,8 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
   }))
   ok('样式表已加载', cssState.sheets > 0 && cssState.bg !== 'rgba(0, 0, 0, 0)', JSON.stringify(cssState))
 
-  console.log('\n== 2. 扫描全库 + 缓存 ==')
-  await page.getByRole('button', { name: '扫描全库' }).click()
+  console.log('\n== 2. 扫描 + 缓存 ==')
+  await page.getByRole('button', { name: '扫描', exact: true }).click()
   await page.waitForFunction(() => /扫描完成|缓存已保存|缓存保存失败/.test(document.body.innerText), null, { timeout: 20000 })
   await wait(700)
   ok('扫描调用了 entries.list', (await page.evaluate(() => window.__calls.entriesList)) > 0)
@@ -458,15 +458,15 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
   await wait(200)
 
   console.log('\n== 9. 网格 / 单图页 / 满屏 ==')
-  await page.getByRole('button', { name: '切到看图' }).click()
+  await page.getByRole('button', { name: '看图', exact: true }).click()
   await wait(600)
   ok('网格增量渲染 <=320', (await page.evaluate(() => document.querySelectorAll('.grid-cell').length)) <= 320)
   await page.evaluate(() => { const el = document.querySelector('.grid-scroll'); el.scrollTop = 400 })
-  await page.getByRole('button', { name: '切到筛选' }).click()
+  await page.getByRole('button', { name: '筛选', exact: true }).click()
   await wait(200)
   await page.locator('.group', { hasText: '1-品类' }).getByRole('button', { name: '珠宝', exact: true }).click()
   await wait(300)
-  await page.getByRole('button', { name: '切到看图' }).click()
+  await page.getByRole('button', { name: '看图', exact: true }).click()
   await wait(300)
   eq('换筛选后网格回到顶部', await page.evaluate(() => document.querySelector('.grid-scroll').scrollTop), 0)
   await page.locator('.grid-cell').first().click()
@@ -494,11 +494,157 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
   eq('关闭调用 window.close', await page.evaluate(() => window.__calls.close), 1)
   eq('全程 window.resize = 0', await page.evaluate(() => window.__calls.resize), 0)
 
+  console.log('\n== 9c. 第 2 行按钮组（筛选/看图 · 扫描 · 诊断）==')
+  const row2 = await page.evaluate(() => {
+    const right = document.querySelector('.toolbar-right')
+    return [...right.querySelectorAll('button')]
+      .filter((b) => b.offsetParent !== null)
+      .map((b) => ({
+        text: b.innerText.trim(),
+        x: Math.round(b.getBoundingClientRect().x),
+        pressed: b.getAttribute('aria-pressed'),
+      }))
+  })
+  eq('第 2 行按钮顺序：筛选/看图 → 扫描 → 诊断', row2.map((b) => b.text).join('|'), '筛选|看图|扫描|诊断')
+  ok('四个按钮从左到右排列', row2.every((b, i) => i === 0 || b.x > row2[i - 1].x), JSON.stringify(row2.map((b) => [b.text, b.x])))
+  eq('当前视图高亮「看图」', row2.find((b) => b.pressed === 'true')?.text, '看图')
+  ok('第 2 行有「扫描」、全文不再出现「扫描全库」', (await page.evaluate(() => document.body.innerText.includes('扫描全库'))) === false)
+  ok(
+    '第 1 行右上只剩三窗口图标（旧切换按钮已移走）',
+    (await page.locator('.topbar-right .icon-btn').count()) === 0 &&
+      (await page.locator('.topbar-right .win-group button').count()) === 3,
+  )
+
+  console.log('\n== 9b. 对比查看（2-4 图）+ 双击返回 ==')
+  const rectOf = (sel) =>
+    page.evaluate((s) => {
+      const el = document.querySelector(s)
+      if (!el) return null
+      const r = el.getBoundingClientRect()
+      return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) }
+    }, sel)
+  // 筛选页：对比按钮 → 候选层（不要求先有图）
+  await page.getByRole('button', { name: '筛选', exact: true }).click()
+  await wait(250)
+  await page.locator('.toolbar').getByRole('button', { name: '对比', exact: true }).click()
+  await page.waitForSelector('.picker-mask')
+  ok('筛选页「对比」也能打开候选层', (await page.locator('.picker-thumb').count()) > 0, `${await page.locator('.picker-thumb').count()} 个候选`)
+  await page.keyboard.press('Escape')
+  await wait(250)
+  eq('Esc 取消候选层', await page.locator('.picker-mask').count(), 0)
+  await page.getByRole('button', { name: '看图', exact: true }).click()
+  await wait(400)
+  const gridRect = await rectOf('.grid-scroll')
+  // Ctrl+点击多选 2 张
+  await page.locator('.grid-cell').nth(0).click({ modifiers: ['Control'] })
+  await page.locator('.grid-cell').nth(1).click({ modifiers: ['Control'] })
+  await wait(300)
+  eq('Ctrl+点击选中 2 张', await page.locator('.grid-cell.is-selected').count(), 2)
+  ok('角标显示 1 / 2', (await page.locator('.grid-cell .pick-badge').allInnerTexts()).join(',') === '1,2')
+  await page.locator('.toolbar').getByRole('button', { name: /^对比/ }).click()
+  await page.waitForSelector('.compare')
+  eq('对比层显示 2 张', await page.locator('.compare-cell').count(), 2)
+  const gridRectAfter = await rectOf('.grid-scroll')
+  ok('打开对比后网格区位置/面积不变', JSON.stringify(gridRect) === JSON.stringify(gridRectAfter), JSON.stringify(gridRectAfter))
+  await page.keyboard.press('Escape')
+  await wait(300)
+  eq('Esc 关闭对比', await page.locator('.compare').count(), 0)
+  // 加到 4 张：对比 4 图（2×2）
+  await page.locator('.grid-cell').nth(2).click({ modifiers: ['Control'] })
+  await page.locator('.grid-cell').nth(3).click({ modifiers: ['Control'] })
+  await wait(250)
+  eq('可同时选 4 张', await page.locator('.grid-cell.is-selected').count(), 4)
+  await page.locator('.grid-cell').nth(4).click({ modifiers: ['Control'] })
+  await wait(200)
+  eq('最多 4 张（第 5 张不入选）', await page.locator('.grid-cell.is-selected').count(), 4)
+  await page.locator('.toolbar').getByRole('button', { name: /^对比/ }).click()
+  await page.waitForSelector('.compare')
+  eq('对比层显示 4 张', await page.locator('.compare-cell').count(), 4)
+  const cmpOverlap = await page.evaluate(() => {
+    const boxes = [...document.querySelectorAll('.compare-cell')].map((el) => el.getBoundingClientRect())
+    let bad = 0
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i]
+        const b = boxes[j]
+        if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) bad++
+      }
+    }
+    return { bad, sizes: boxes.map((r) => `${Math.round(r.width)}x${Math.round(r.height)}`) }
+  })
+  eq('4 图互不重叠', cmpOverlap.bad, 0)
+  ok('4 图各自有面积', cmpOverlap.sizes.every((s) => !s.startsWith('0x')), cmpOverlap.sizes.join(' '))
+  await page.screenshot({ path: path.join(ROOT, 'shot-v6-1-compare4.png') })
+  ok('4 图按 2×2 排（列数=2）', (await page.locator('.compare-grid').evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(' ').length)) === 2)
+  await page.keyboard.press('Escape')
+  await wait(300)
+  // 单图页：对比按钮 → 候选层（当前图预选）
+  await page.locator('.grid-cell:not(:has-text("视频"))').first().click()
+  await page.waitForSelector('.viewer')
+  const viewerRect = await rectOf('.viewer-body')
+  const cmpPos = await page.evaluate(() => {
+    const x = (s) => Math.round(document.querySelector(s).getBoundingClientRect().x)
+    return { back: x('.viewer-back'), cmp: x('.viewer-compare'), title: x('.viewer-title'), win: x('.viewer-bar .win-group') }
+  })
+  ok('单图页「对比」在左侧（返回箭头后、标题前）', cmpPos.cmp > cmpPos.back && cmpPos.cmp < cmpPos.title, JSON.stringify(cmpPos))
+  ok('单图页「对比」不再贴右上角', cmpPos.win - cmpPos.cmp > 400, JSON.stringify(cmpPos))
+  await page.locator('.viewer-compare').click()
+  await page.waitForSelector('.picker-mask')
+  await page.screenshot({ path: path.join(ROOT, 'shot-v6-2-picker.png') })
+  ok('单图页「对比」打开候选层且当前图预选', (await page.locator('.picker-thumb.on').count()) === 1, await page.locator('.picker-head').innerText())
+  const pickerGeom = await page.evaluate(() => {
+    const ts = [...document.querySelectorAll('.picker-thumb')].slice(0, 8)
+    const boxes = ts.map((t) => t.getBoundingClientRect())
+    let overlap = 0
+    let hitBad = 0
+    for (let i = 0; i < boxes.length; i++) {
+      const r = boxes[i]
+      const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)
+      if (!hit || !hit.closest || hit.closest('.picker-thumb') !== ts[i]) hitBad++
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i]
+        const b = boxes[j]
+        if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) overlap++
+      }
+    }
+    return { overlap, hitBad }
+  })
+  eq('候选层缩略图无重叠', pickerGeom.overlap, 0)
+  eq('候选层每个缩略图都点得中', pickerGeom.hitBad, 0)
+  const pickIds = await page
+    .locator('.picker-thumb')
+    .evaluateAll((els) => els.filter((e) => !e.classList.contains('on')).slice(0, 2).map((e) => e.getAttribute('data-id')))
+  await page.locator(`.picker-thumb[data-id="${pickIds[0]}"]`).click()
+  await page.locator(`.picker-thumb[data-id="${pickIds[1]}"]`).click()
+  await wait(250)
+  ok('候选层选满 3 张', (await page.locator('.picker-thumb.on').count()) === 3)
+  await page.getByRole('button', { name: /开始对比/ }).click()
+  await page.waitForSelector('.compare')
+  eq('对比层显示 3 张', await page.locator('.compare-cell').count(), 3)
+  const viewerRectAfter = await rectOf('.viewer-body')
+  ok('对比打开时单图区位置/面积不变', JSON.stringify(viewerRect) === JSON.stringify(viewerRectAfter), JSON.stringify(viewerRectAfter))
+  // 对比层右上角：三个窗口图标（与筛选页同源），不再有重复的「关闭」文字按钮
+  ok('对比层三窗口图标齐全', (await page.locator('.compare .win-group button').count()) === 3)
+  ok('对比层保留返回箭头', (await page.locator('.compare-back').count()) === 1)
+  eq('对比层没有重复的关闭按钮', await page.locator('.compare-close').count(), 0)
+  const closeCallsBefore = await page.evaluate(() => window.__calls.close)
+  await page.locator('.compare .win-group [aria-label="关闭"]').click()
+  await wait(200)
+  eq('对比层 ✕ 关闭的是插件窗口', await page.evaluate(() => window.__calls.close), closeCallsBefore + 1)
+  await page.keyboard.press('Escape')
+  await wait(300)
+  ok('关闭对比后回到单图页', (await page.locator('.viewer').count()) === 1 && (await page.locator('.compare').count()) === 0)
+  // 双击图片 → 回缩略图
+  await page.locator('.viewer-media').dblclick()
+  await wait(400)
+  eq('双击图片返回缩略图', await page.locator('.viewer').count(), 0)
+  ok('回到网格', (await page.locator('.grid-cell').count()) > 0)
+
   console.log('\n== 10. 缓存编码回归（视频 / 尺寸 / 逗号名） ==')
   await page.goto(`http://127.0.0.1:${PORT}/index.prod.html`, { waitUntil: 'load' })
   await page.waitForSelector('.topbar')
   await wait(700)
-  await page.getByRole('button', { name: '切到看图' }).click()
+  await page.getByRole('button', { name: '看图', exact: true }).click()
   await wait(900)
   const cells = await page.evaluate(() => {
     const list = [...document.querySelectorAll('.grid-cell')]
@@ -517,10 +663,10 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 
   console.log('\n== 11. 缓存写失败不毁旧缓存 ==')
   const genBefore = await page.evaluate(() => JSON.parse(window.__readKey('scan4.manifest')).gen)
-  await page.getByRole('button', { name: '切到筛选' }).click()
+  await page.getByRole('button', { name: '筛选', exact: true }).click()
   await wait(200)
   await page.evaluate(() => { window.__limit = window.__totalBytes() + 4096 })
-  await page.getByRole('button', { name: /扫描全库/ }).click()
+  await page.getByRole('button', { name: /^扫描/ }).click()
   await page.waitForFunction(() => /缓存保存失败/.test(document.body.innerText), null, { timeout: 20000 })
   await wait(400)
   eq('旧 manifest 未变', await page.evaluate(() => JSON.parse(window.__readKey('scan4.manifest')).gen), genBefore)

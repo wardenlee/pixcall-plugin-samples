@@ -255,7 +255,7 @@ function ok(name, cond, detail) {
 
   console.log(`== A. 首次扫描 ${N.toLocaleString()} 条 ==`)
   const t0 = Date.now()
-  await page.getByRole('button', { name: /扫描全库/ }).first().click()
+  await page.getByRole('button', { name: /^扫描/ }).first().click()
   await page.waitForFunction(() => /缓存已保存|缓存保存失败/.test(document.body.innerText), null, { timeout: 180000 })
   const elapsed = Date.now() - t0
   const info = await page.evaluate(() => ({

@@ -1,10 +1,10 @@
 {
-  "id": "filter-plugin",
+  "id": "pixcall-filter",
   "name": "%name%",
   "description": "%description%",
-  "version": "0.3.1",
-  "author": "wardenlee",
-  "homepage": "https://github.com/wardenlee/pixcall-plugin-samples",
+  "version": "0.3.4",
+  "author": "one",
+  "homepage": "https://pixcall.com",
   "icon": "icons/icon.png",
   "categories": [
     "viewer"
@@ -23,7 +23,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "filter-plugin.open",
+        "command": "pixcall-filter.open",
         "title": "%command.open%",
         "kind": "window",
         "entry": "index.prod.html",
@@ -45,24 +45,24 @@
     ],
     "context_menus": [
       {
-        "command": "filter-plugin.open",
+        "command": "pixcall-filter.open",
         "location": "entry_list",
         "when": "has_selection"
       },
       {
-        "command": "filter-plugin.open",
+        "command": "pixcall-filter.open",
         "location": "folder_tree"
       }
     ],
     "app_menus": [
       {
-        "command": "filter-plugin.open",
+        "command": "pixcall-filter.open",
         "location": "file"
       }
     ],
     "keybindings": [
       {
-        "command": "filter-plugin.open",
+        "command": "pixcall-filter.open",
         "key": "Shift+E"
       }
     ]

@@ -175,7 +175,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
   await wait(500)
 
   // 扫描一次，拿到全库数据
-  await page.getByRole('button', { name: /扫描全库/ }).first().click()
+  await page.getByRole('button', { name: /^扫描/ }).first().click()
   await page.waitForFunction(() => /缓存已保存|扫描完成/.test(document.body.innerText), null, { timeout: 30000 })
   await wait(800)
 
@@ -201,7 +201,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
   await wait(200)
 
   // 网格
-  await page.getByRole('button', { name: '切到看图' }).click()
+  await page.getByRole('button', { name: '看图', exact: true }).click()
   await wait(1500)
   await page.screenshot({ path: shorts('shot-v5-3-grid.png') })
   console.log('saved shot-v5-3-grid.png')
@@ -239,7 +239,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
   console.log('LAYOUT@viewer', JSON.stringify(m1))
   await page.keyboard.press('Escape')
   await wait(300)
-  await page.getByRole('button', { name: '切到筛选' }).click()
+  await page.getByRole('button', { name: '筛选', exact: true }).click()
   await wait(300)
   await page.click('.scope-caret')
   await wait(300)
@@ -250,6 +250,10 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
       vh: window.innerHeight,
       panel: { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height), right: Math.round(r.right), bottom: Math.round(r.bottom) },
       pageOverflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      toolbarH: Math.round(document.querySelector('.toolbar').getBoundingClientRect().height),
+      row2: [...document.querySelector('.toolbar-right').querySelectorAll('button')]
+        .filter((b) => b.offsetParent !== null)
+        .map((b) => ({ t: b.innerText.trim(), x: Math.round(b.getBoundingClientRect().x), y: Math.round(b.getBoundingClientRect().y) })),
     }
   })
   console.log('LAYOUT@panel', JSON.stringify(m2))
@@ -267,6 +271,11 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
     topbarH: Math.round(document.querySelector('.topbar').getBoundingClientRect().height),
     winRight: Math.round(document.querySelector('.topbar-right').getBoundingClientRect().right),
     scopeW: Math.round(document.querySelector('.scope').getBoundingClientRect().width),
+    toolbarH: Math.round(document.querySelector('.toolbar').getBoundingClientRect().height),
+    bodyH: Math.round(document.querySelector('.app').getBoundingClientRect().height),
+    row2: [...document.querySelector('.toolbar-right').querySelectorAll('button')]
+      .filter((b) => b.offsetParent !== null)
+      .map((b) => ({ t: b.innerText.trim(), x: Math.round(b.getBoundingClientRect().x), y: Math.round(b.getBoundingClientRect().y) })),
   }))
   console.log('LAYOUT@820x560', JSON.stringify(m3))
   await page.screenshot({ path: shorts('shot-v5-5-small-window.png') })

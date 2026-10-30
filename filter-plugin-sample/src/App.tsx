@@ -8,7 +8,7 @@
  *   ③ 批量标签输入：多标签自动分解/最长匹配/候选确认/应用后可撤销。
  *   ④ 第 1 行改为分段动态数据：范围 │ 总 │ 命中 │ 数据来源。
  *
- * 数据：打开时只读上次缓存（零扫描）；「扫描全库」始终手动。
+ * 数据：打开时只读上次缓存（零扫描）；「扫描」始终手动。
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -26,12 +26,13 @@ import { loadScan, peekScanManifest, saveScan } from './lib/scanCache'
 import { filterByScope, listFolders, scanAllEntries } from './lib/scanner'
 import { buildFolderTree, folderPath, scopeNames } from './lib/folders'
 import { ImageGrid, ImageViewer, type GridSize } from './components/ImageViews'
+import { ComparePicker, CompareView } from './components/CompareView'
 import { FilterList } from './components/FilterList'
 import { ScopeControl } from './components/ScopeControl'
 import { TagPicker, splitTagTokens } from './components/TagPicker'
 import { Diagnostics } from './components/Diagnostics'
 import { WindowControls } from './components/WindowControls'
-import { IconFilter, IconImage, IconRefresh } from './components/Icons'
+import { IconRefresh } from './components/Icons'
 import { useWindowStage } from './hooks/useWindowStage'
 import type { FolderInfo, MediaEntry, Scope } from './lib/media'
 
@@ -77,6 +78,9 @@ export default function App() {
   const [view, setView] = useState<View>('filter')
   const [gridSize, setGridSize] = useState<GridSize>('m')
   const [viewerIdx, setViewerIdx] = useState<number | null>(null)
+  const [compareSel, setCompareSel] = useState<string[]>([])
+  const [compareOpen, setCompareOpen] = useState<string[] | null>(null)
+  const [pickerOpen, setPickerOpen] = useState<string[] | null>(null)
   const [toast, setToast] = useState('')
   const [diagOpen, setDiagOpen] = useState(false)
 
@@ -277,7 +281,7 @@ export default function App() {
     if (scanning) return
     setScanning(true)
     scanAbortRef.current = false
-    setProgress('正在扫描全库…')
+    setProgress('正在扫描…')
     try {
       const list = await scanAllEntries(
         (loaded, page) => setProgress(`正在扫描… 已读取 ${loaded.toLocaleString()} 条（第 ${page} 页）`),
@@ -447,6 +451,33 @@ export default function App() {
 
   const openViewer = useCallback((i: number) => setViewerIdx(i), [])
 
+  /* ══════════════ 对比查看（2026-10-31） ══════════════ */
+
+  const entryById = useMemo(() => new Map(matchedEntries.map((e) => [e.id, e])), [matchedEntries])
+
+  const toggleCompareSel = useCallback((id: string) => {
+    setCompareSel((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id)
+      if (prev.length >= 4) return prev
+      return [...prev, id]
+    })
+  }, [])
+
+  const openPicker = useCallback((preselect: string[]) => setPickerOpen(preselect), [])
+
+  const confirmPicker = useCallback((ids: string[]) => {
+    setPickerOpen(null)
+    setCompareSel(ids)
+    setCompareOpen(ids)
+  }, [])
+
+  const compareEntries = useMemo(
+    () => (compareOpen ?? []).map((id) => entryById.get(id)).filter((e): e is MediaEntry => Boolean(e)),
+    [compareOpen, entryById],
+  )
+
+  const compareOverlayOpen = pickerOpen !== null || compareEntries.length >= 2
+
   /* ══════════════ 渲染 ══════════════ */
 
   if (phase === 'loading') {
@@ -481,10 +512,10 @@ export default function App() {
         className="btn-ghost"
         onClick={() => void doScan()}
         disabled={scanning}
-        title="手动扫描全库：约 2.4 万条，一次读入并缓存，之后各文件夹通用（不会自动触发）"
+        title="扫描工程库：约 2.4 万条，一次读入并缓存，之后各文件夹通用（不会自动触发）"
       >
         <IconRefresh size={13} />
-        <span>扫描全库</span>
+        <span>扫描</span>
       </button>
       <button type="button" className="btn-ghost" onClick={() => setDiagOpen(true)} title="诊断：看宿主返回了什么、全屏能力、缓存状态">
         诊断
@@ -492,9 +523,33 @@ export default function App() {
     </>
   )
 
+  /* 第 2 行右侧：筛选/看图 切换（文字分段）→ 扫描 → 诊断 */
+  const viewSwitch = (
+    <div className="view-switch" role="group" aria-label="视图切换">
+      <button
+        type="button"
+        className={view === 'filter' ? 'on' : ''}
+        aria-pressed={view === 'filter'}
+        onClick={() => setView('filter')}
+        title="筛选视图：按标签分组筛选"
+      >
+        筛选
+      </button>
+      <button
+        type="button"
+        className={view === 'grid' ? 'on' : ''}
+        aria-pressed={view === 'grid'}
+        onClick={() => setView('grid')}
+        title="看图视图：缩略图网格"
+      >
+        看图
+      </button>
+    </div>
+  )
+
   return (
     <div className="app">
-      {/* ═══ 第 1 行：标题 · 范围 · 动态数据（分段） · 视图切换 · 三窗口图标 ═══ */}
+      {/* ═══ 第 1 行：标题 · 范围 · 动态数据（分段） · 三窗口图标 ═══ */}
       <header className="topbar">
         <span className="topbar-title">Pixcall 分组筛选</span>
 
@@ -536,16 +591,6 @@ export default function App() {
         </div>
 
         <div className="topbar-right">
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={() => setView(view === 'grid' ? 'filter' : 'grid')}
-            title={view === 'grid' ? '切到筛选' : '切到看图'}
-            aria-label={view === 'grid' ? '切到筛选' : '切到看图'}
-          >
-            {view === 'grid' ? <IconFilter size={16} /> : <IconImage size={16} />}
-          </button>
-          <span className="sep" />
           <WindowControls
             stage={win.stage}
             supported={win.supported}
@@ -575,6 +620,15 @@ export default function App() {
             <button type="button" className="btn-ghost" onClick={resetAll}>
               清空
             </button>
+            <button
+              type="button"
+              className="btn-ghost"
+              disabled={matchedEntries.length < 2}
+              onClick={() => openPicker(compareSel)}
+              title="从当前筛选结果里手动选 2-4 张图对比"
+            >
+              对比
+            </button>
             {scope.kind === 'folders' && (
               <label className="check" title={scopePath}>
                 <input type="checkbox" checked={scope.includeSub} onChange={toggleIncludeSub} />
@@ -601,6 +655,21 @@ export default function App() {
               </button>
             ))}
             <span className="hint">{matchedIds.length.toLocaleString()} 张</span>
+            <button
+              type="button"
+              className="btn"
+              disabled={matchedEntries.length < 2}
+              onClick={() => (compareSel.length >= 2 ? setCompareOpen(compareSel) : openPicker(compareSel))}
+              title="Ctrl/⌘ 或 Shift + 点击缩略图可多选 2-4 张；没选时点这里从结果里挑"
+            >
+              对比{compareSel.length > 0 ? ` (${compareSel.length})` : ''}
+            </button>
+            {compareSel.length > 0 && (
+              <button type="button" className="btn-ghost" onClick={() => setCompareSel([])} title="清空对比选择">
+                清空选择
+              </button>
+            )}
+            {compareSel.length > 0 && <span className="hint">Ctrl+点击可加减选（最多 4 张）</span>}
           </>
         )}
 
@@ -608,6 +677,7 @@ export default function App() {
           <span className="hint" title={scopePath}>
             {progress}
           </span>
+          {viewSwitch}
           {dataActions}
         </div>
       </div>
@@ -618,7 +688,7 @@ export default function App() {
           {fullData.length === 0 ? (
             <EmptyState
               title="还没有全库数据"
-              hint="点「扫描全库」一次（约 2.4 万条，缓存后各文件夹通用）。范围可先用 ▾ 勾选多个文件夹。"
+              hint="点「扫描」一次（约 2.4 万条，缓存后各文件夹通用）。范围可先用 ▾ 勾选多个文件夹。"
               onScan={() => void doScan()}
               scanning={scanning}
             />
@@ -643,6 +713,8 @@ export default function App() {
               size={gridSize}
               resetKey={resetKey}
               onOpen={openViewer}
+              selectedIds={compareSel}
+              onToggleSelect={toggleCompareSel}
             />
           )}
         </div>
@@ -698,10 +770,36 @@ export default function App() {
           stage={win.stage}
           supported={win.supported}
           onIndex={setViewerIdx}
-          onClose={() => setViewerIdx(null)}
+          onClose={() => {
+            if (!compareOverlayOpen) setViewerIdx(null)
+          }}
+          onCompare={(id) => openPicker([id])}
           onMaximize={() => void win.maximize()}
           onRestore={() => void win.restore()}
           onCloseWindow={win.closeWindow}
+        />
+      )}
+
+      {pickerOpen !== null && (
+        <ComparePicker
+          entries={matchedEntries}
+          fileServer={fileServer}
+          preselect={pickerOpen}
+          onCancel={() => setPickerOpen(null)}
+          onConfirm={confirmPicker}
+        />
+      )}
+
+      {compareEntries.length >= 2 && (
+        <CompareView
+          entries={compareEntries}
+          fileServer={fileServer}
+          stage={win.stage}
+          supported={win.supported}
+          onRestore={() => void win.restore()}
+          onMaximize={() => void win.maximize()}
+          onCloseWindow={win.closeWindow}
+          onClose={() => setCompareOpen(null)}
         />
       )}
     </div>
@@ -730,7 +828,7 @@ function EmptyState({
         </div>
         <div className="empty-actions">
           <button type="button" className="btn-primary" onClick={onScan} disabled={scanning}>
-            {scanning ? '扫描中…' : '扫描全库'}
+            {scanning ? '扫描中…' : '扫描'}
           </button>
         </div>
       </div>

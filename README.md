@@ -6,7 +6,7 @@ production-grade sample:
 - [`filter-plugin-sample`](./filter-plugin-sample/) — **Pixcall Group Filter
   (Pixcall 分组筛选)**: filter library entries by tag groups with per-group
   `any` / `all` / `exclude` logic, over a folders multi-select scope, with a
-  grid and a single-image viewer.
+  grid, a single-image viewer and a 2 / 3 / 4-image compare view.
 
 Open its [README](./filter-plugin-sample/README.md) for features, installation,
 development and test instructions.

@@ -183,7 +183,7 @@ export function ScopeControl({
           </div>
 
           {!hasFullData && (
-            <div className="scope-note">还没有全库数据：先点「扫描全库」一次，才能按文件夹筛选（结果会缓存，之后各文件夹通用）。</div>
+            <div className="scope-note">还没有全库数据：先点「扫描」一次，才能按文件夹筛选（结果会缓存，之后各文件夹通用）。</div>
           )}
 
           <div className="scope-quick">
